@@ -1,0 +1,766 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Super cool API for metallurgy",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/SlagMode/Decodejwt/{jwt}": {
+      "get": {
+        "tags": [
+          "SlagMode"
+        ],
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/Login": {
+      "post": {
+        "tags": [
+          "SlagMode"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthorisationData"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthorisationData"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthorisationData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/Calculate": {
+      "post": {
+        "tags": [
+          "SlagMode"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InputKal"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InputKal"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InputKal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/GetMaterials": {
+      "get": {
+        "tags": [
+          "SlagMode"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/GetBlastFurnaces": {
+      "get": {
+        "tags": [
+          "SlagMode"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/GetOldInput": {
+      "get": {
+        "tags": [
+          "SlagMode"
+        ],
+        "parameters": [
+          {
+            "name": "variantId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/EditGuide": {
+      "post": {
+        "tags": [
+          "SlagMode"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShihtaCatalog"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShihtaCatalog"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShihtaCatalog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/AddInput": {
+      "put": {
+        "tags": [
+          "SlagMode"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalcDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalcDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalcDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/DeleteOldInput": {
+      "delete": {
+        "tags": [
+          "SlagMode"
+        ],
+        "parameters": [
+          {
+            "name": "calcID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/SlagMode/GetAllInputsForUser": {
+      "get": {
+        "tags": [
+          "SlagMode"
+        ],
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CalcDTO": {
+        "type": "object",
+        "properties": {
+          "parameters": {
+            "$ref": "#/components/schemas/VariantsParameter"
+          },
+          "charges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariantCharges"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputCastIronForCalc": {
+        "type": "object",
+        "properties": {
+          "si": {
+            "type": "number",
+            "format": "double"
+          },
+          "s": {
+            "type": "number",
+            "format": "double"
+          },
+          "mn": {
+            "type": "number",
+            "format": "double"
+          },
+          "c": {
+            "type": "number",
+            "format": "double"
+          },
+          "ti": {
+            "type": "number",
+            "format": "double"
+          },
+          "cr": {
+            "type": "number",
+            "format": "double"
+          },
+          "temp": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputChargeComponentsForCalc": {
+        "type": "object",
+        "properties": {
+          "sourcename": {
+            "type": "string",
+            "nullable": true
+          },
+          "consumption": {
+            "type": "number",
+            "format": "double"
+          },
+          "fe": {
+            "type": "number",
+            "format": "double"
+          },
+          "siO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "al2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "caO": {
+            "type": "number",
+            "format": "double"
+          },
+          "mgO": {
+            "type": "number",
+            "format": "double"
+          },
+          "s": {
+            "type": "number",
+            "format": "double"
+          },
+          "mnO": {
+            "type": "number",
+            "format": "double"
+          },
+          "tiO2": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputCokeForCalcs": {
+        "type": "object",
+        "properties": {
+          "consumption": {
+            "type": "number",
+            "format": "double"
+          },
+          "sulfur": {
+            "type": "number",
+            "format": "double"
+          },
+          "ashAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "ashCaOFraction": {
+            "type": "number",
+            "format": "double"
+          },
+          "ashSiO2Fraction": {
+            "type": "number",
+            "format": "double"
+          },
+          "ashAl2O3Fraction": {
+            "type": "number",
+            "format": "double"
+          },
+          "ashMgOFraction": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputKal": {
+        "type": "object",
+        "properties": {
+          "coke": {
+            "$ref": "#/components/schemas/InputCokeForCalcs"
+          },
+          "iron": {
+            "$ref": "#/components/schemas/InputCastIronForCalc"
+          },
+          "slag": {
+            "$ref": "#/components/schemas/InputSlagForCalc"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InputChargeComponentsForCalc"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InputSlagForCalc": {
+        "type": "object",
+        "properties": {
+          "caO": {
+            "type": "number",
+            "format": "double"
+          },
+          "siO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "tiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "al2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "mgO": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShihtaCatalog": {
+        "type": "object",
+        "properties": {
+          "componentID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nameShihta": {
+            "type": "string",
+            "nullable": true
+          },
+          "ruNameShihta": {
+            "type": "string",
+            "nullable": true
+          },
+          "fe": {
+            "type": "number",
+            "format": "double"
+          },
+          "feO": {
+            "type": "number",
+            "format": "double"
+          },
+          "fe2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "siO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "al2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "caO": {
+            "type": "number",
+            "format": "double"
+          },
+          "mgO": {
+            "type": "number",
+            "format": "double"
+          },
+          "s": {
+            "type": "number",
+            "format": "double"
+          },
+          "mnO": {
+            "type": "number",
+            "format": "double"
+          },
+          "zn": {
+            "type": "number",
+            "format": "double"
+          },
+          "pmpp": {
+            "type": "number",
+            "format": "double"
+          },
+          "h2O": {
+            "type": "number",
+            "format": "double"
+          },
+          "tiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "cr": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserAuthorisationData": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VariantCharges": {
+        "type": "object",
+        "properties": {
+          "variantParameters": {
+            "$ref": "#/components/schemas/VariantsParameter"
+          },
+          "variantID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "catalogElem": {
+            "$ref": "#/components/schemas/ShihtaCatalog"
+          },
+          "componentID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "consumption": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaType": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaFe": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaFeO": {
+            "type": "number",
+            "format": "double"
+          },
+          "fe2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaSiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaAl2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaCaO": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaMgO": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaP": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaS": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaMnO": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaZn": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaPmpp": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaH2O": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaTiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "shihtaCr": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VariantsParameter": {
+        "type": "object",
+        "properties": {
+          "variantID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dateVariant": {
+            "type": "string",
+            "nullable": true
+          },
+          "blastFurnaceID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "variantName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ironProduction": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeConsumption": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagOutput": {
+            "type": "number",
+            "format": "double"
+          },
+          "dustRemoval": {
+            "type": "number",
+            "format": "double"
+          },
+          "blowPressure": {
+            "type": "number",
+            "format": "double"
+          },
+          "blowTemperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "blowMoisture": {
+            "type": "number",
+            "format": "double"
+          },
+          "blowO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "naturalGasConsumption": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironTemperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironSi": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironS": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironMn": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironC": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironP": {
+            "type": "number",
+            "format": "double"
+          },
+          "ironTi": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagSiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagCaO": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagAl2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagMgO": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagS": {
+            "type": "number",
+            "format": "double"
+          },
+          "slagTiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAsh": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeS": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeVolatile": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAshFe": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAshCaO": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAshSiO2": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAshAl2O3": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAshMgO": {
+            "type": "number",
+            "format": "double"
+          },
+          "cokeAshP": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Введите токен JWT в формате: Bearer {your token}",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}

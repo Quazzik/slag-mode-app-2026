@@ -1,0 +1,28 @@
+{
+  "coke": {
+    "consumption": 0,
+    "sulfur": 0,
+    "ashAmount": 0,
+    "ashCaOFraction": 0,
+    "ashSiO2Fraction": 0,
+    "ashAl2O3Fraction": 0,
+    "ashMgOFraction": 0
+  },
+  "iron": {
+    "si": 0,
+    "s": 0,
+    "mn": 0,
+    "c": 0,
+    "ti": 0,
+    "cr": 0,
+    "temp": 0
+  },
+  "slag": {
+    "caO": 0,
+    "siO2": 0,
+    "tiO2": 0,
+    "al2O3": 0,
+    "mgO": 0
+  },
+  "components": []
+}

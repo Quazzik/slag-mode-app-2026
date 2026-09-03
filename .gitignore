@@ -134,3 +134,24 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Node.js и npm
+node_modules/
+*.log
+*.lock
+
+# Umi-специфичные папки
+.umi/
+.umi-production/
+
+# Сборка и артефакты
+dist/
+build/
+
+# Временные и локальные файлы
+.tmp/
+*.tmp
+
+# Настройки IDE (часто полезно игнорировать, но иногда полезно оставить, если команда работает в одной среде)
+.idea/
+.vscode/
