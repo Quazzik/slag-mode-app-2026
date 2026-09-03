@@ -143,6 +143,7 @@ node_modules/
 # Umi-специфичные папки
 .umi/
 .umi-production/
+--ignore-pattern .umirc.ts
 
 # Сборка и артефакты
 dist/

@@ -6,6 +6,13 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
+  proxy: {
+    '/api/SlagMode': {
+      target: 'https://localhost:44324',
+      changeOrigin: true,
+      secure: false,
+    },
+  },
   layout: {
     title: '@umijs/max',
   },
@@ -20,17 +27,16 @@ export default defineConfig({
       component: './Home',
     },
     {
-      name: 'Авторизация',
-      path: '/access',
-      component: './Access',
-    },
-    {
       name: 'Справочники',
       path: '/guides',
       component: './Guides',
+    },
+    {
+      name: 'Авторизация',
+      path: '/access',
+      component: './Access',
     },
   ],
   npmClient: 'npm',
   utoopack: {},
 });
-
