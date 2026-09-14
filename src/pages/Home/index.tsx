@@ -82,6 +82,93 @@ const variantParameterFields = [
   'cokeAshP',
 ];
 
+const inputLabels: Record<string, Record<string, string>> = {
+  iron: {
+    si: 'Кремний в чугуне (Si)',
+    s: 'Сера в чугуне (S)',
+    mn: 'Марганец в чугуне (Mn)',
+    c: 'Углерод в чугуне (C)',
+    ti: 'Титан в чугуне (Ti)',
+    cr: 'Хром в чугуне (Cr)',
+    temp: 'Температура чугуна',
+  },
+  slag: {
+    caO: 'Оксид кальция в шлаке (CaO)',
+    siO2: 'Диоксид кремния в шлаке (SiO2)',
+    tiO2: 'Диоксид титана в шлаке (TiO2)',
+    al2O3: 'Оксид алюминия в шлаке (Al2O3)',
+    mgO: 'Оксид магния в шлаке (MgO)',
+  },
+  coke: {
+    consumption: 'Расход кокса',
+    sulfur: 'Сера в коксе',
+    ashAmount: 'Зольность кокса',
+    ashCaOFraction: 'Доля CaO в золе кокса',
+    ashSiO2Fraction: 'Доля SiO2 в золе кокса',
+    ashAl2O3Fraction: 'Доля Al2O3 в золе кокса',
+    ashMgOFraction: 'Доля MgO в золе кокса',
+  },
+  components: {
+    sourcename: 'Материал',
+    consumption: 'Расход компонента',
+    fe: 'Железо (Fe)',
+    siO2: 'Диоксид кремния (SiO2)',
+    al2O3: 'Оксид алюминия (Al2O3)',
+    caO: 'Оксид кальция (CaO)',
+    mgO: 'Оксид магния (MgO)',
+    s: 'Сера (S)',
+    mnO: 'Оксид марганца (MnO)',
+    tiO2: 'Диоксид титана (TiO2)',
+  },
+};
+
+const resultLabels: Record<string, string> = {
+  slagBasicity1: 'Основность шлака 1',
+  slagBasicity2: 'Основность шлака 2',
+  slagBasicity3: 'Основность шлака 3',
+  slagBasicityKulikov: 'Основность шлака по Куликову',
+  slagOut: 'Выход шлака',
+  materialCons: 'Расход шихтовых материалов',
+  totalAglo: 'Общий расход агломерата',
+  propAglo23: 'Доля агломерата с А/Ф 2 и 3',
+  propAglo4: 'Доля агломерата с А/Ф  4',
+  propSsgpo: 'Доля ССГПО',
+  propLeb: 'Доля Лебединского ГОКа',
+  propKach: 'Доля Качканарского ГОКа',
+  propMix: 'Доля смеси руд',
+  propOre: 'Доля руды',
+  propWeldSlag: 'Доля сварочного шлака',
+  propBFAddict: 'Доля добавок в доменную печь',
+  propMinInclude: 'Доля минеральных добавок',
+  totalProp: 'Суммарная доля добавок',
+  viscosity_1400: 'Вязкость шлака при 1400 °C',
+  viscosity_1450: 'Вязкость шлака при 1450 °C',
+  viscosity_1500: 'Вязкость шлака при 1500 °C',
+  viscosity_1550: 'Вязкость шлака при 1550 °C',
+  temp_7_puaz: 'Температура 7 ПУАЗ',
+  gradient_7_25: 'Градиент температуры 7-25',
+  gradient_1400_1500: 'Градиент вязкости 1400-1500 °C',
+  slagTemperature: 'Температура шлака',
+  slagTemperature_25puaz: 'Температура шлака 25 ПУАЗ',
+  currSlagViscosity: 'Текущая вязкость шлака',
+  balSlagMass: 'Балансовая масса шлака',
+  caOBalSlagMass: 'Балансовая масса CaO в шлаке',
+  totalSInOre: 'Общее содержание серы в руде',
+  sActivity: 'Активность серы',
+  sDistribution: 'Распределение серы',
+  sContentInCastIron: 'Содержание серы в чугуне',
+  castIronTemp: 'Температура чугуна',
+//
+};
+
+const getInputLabel = (group: string, field: string) =>
+  inputLabels[group]?.[field] || field;
+
+const getResultLabel = (field: string) =>
+  resultLabels[field] ||
+  resultLabels[field.charAt(0).toUpperCase() + field.slice(1)] ||
+  field;
+
 const showCalculationResult = (response: any) => {
   const resultData = response?.data ?? response ?? {};
   Modal.info({
@@ -92,14 +179,16 @@ const showCalculationResult = (response: any) => {
     centered: true,
     content: (
       <Space direction="vertical" style={{ width: '100%' }}>
-        {Object.entries(resultData).map(([name, value]) => (
+        {Object.entries(resultData)
+          .filter(([name]) => name !== 'propAglo234')
+          .map(([name, value]) => (
           <div key={name}>
-            <Typography.Text strong>{name}:</Typography.Text>{' '}
+            <Typography.Text strong>{getResultLabel(name)}:</Typography.Text>{' '}
             {typeof value === 'object' && value !== null
               ? JSON.stringify(value)
               : String(value ?? '')}
           </div>
-        ))}
+          ))}
       </Space>
     ),
   });
@@ -415,7 +504,7 @@ const HomePage: React.FC = () => {
                       <Form.Item
                         key={key}
                         name={[group, key]}
-                        label={key}
+                        label={getInputLabel(group, key)}
                         className={styles.compactField}
                       >
                         <InputNumber style={{ width: '100%' }} />
@@ -526,7 +615,7 @@ const HomePage: React.FC = () => {
                         <Form.Item
                           {...rest}
                           name={[name, 'consumption']}
-                          label="Расход"
+                          label={getInputLabel('components', 'consumption')}
                           className={styles.compactField}
                         >
                           <InputNumber style={{ width: '100%' }} />
@@ -536,7 +625,7 @@ const HomePage: React.FC = () => {
                             {...rest}
                             key={field}
                             name={[name, field]}
-                            label={field}
+                            label={getInputLabel('components', field)}
                             className={styles.compactField}
                           >
                             <InputNumber
