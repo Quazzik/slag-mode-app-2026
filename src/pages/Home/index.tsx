@@ -85,12 +85,23 @@ const variantParameterFields = [
 const showCalculationResult = (response: any) => {
   const resultData = response?.data ?? response ?? {};
   Modal.info({
-    title: 'Результаты расчёта',
+    title: 'Результат',
     width: 720,
     okText: 'Закрыть',
     closable: true,
     centered: true,
-    content: resultData,
+    content: (
+      <Space direction="vertical" style={{ width: '100%' }}>
+        {Object.entries(resultData).map(([name, value]) => (
+          <div key={name}>
+            <Typography.Text strong>{name}:</Typography.Text>{' '}
+            {typeof value === 'object' && value !== null
+              ? JSON.stringify(value)
+              : String(value ?? '')}
+          </div>
+        ))}
+      </Space>
+    ),
   });
 };
 
@@ -155,7 +166,16 @@ const getMaterialDefaults = (item: any = {}) => {
   return defaults;
 };
 
-const normalizeOldInput = (response: any, materialsList: any[] = []) => {
+const getFurnaceId = (item: any = {}) =>
+  item?.furnaceId ?? item?.furnaceID ?? item?.blastFurnaceID ?? item?.id;
+
+const getFurnaceName = (item: any = {}) => item?.name;
+
+const normalizeOldInput = (
+  response: any,
+  materialsList: any[] = [],
+  furnacesList: any[] = [],
+) => {
   const payload = response?.data ?? response ?? {};
   const parameters = payload.parameters ?? payload.variantParameters ?? {};
   const variantData = Array.isArray(payload.charges)
@@ -197,6 +217,19 @@ const normalizeOldInput = (response: any, materialsList: any[] = []) => {
     payload.parameters?.blastFurnaceID ??
     payload.variantParameters?.furnaceID ??
     payload.variantParameters?.blastFurnaceID;
+  const furnaceName =
+    payload.bfName ??
+    parameters.bfName ??
+    payload.parameters?.bfName ??
+    payload.variantParameters?.bfName;
+  const matchedFurnace = furnaceName
+    ? furnacesList.find(
+        (item: any) =>
+          String(getFurnaceName(item) ?? '').trim().toLowerCase() ===
+          String(furnaceName).trim().toLowerCase(),
+      )
+    : undefined;
+  const matchedFurnaceId = getFurnaceId(matchedFurnace);
   const normalizedParameters = {
     ...getParameterDefaults(),
     ...(payload.parameters ?? payload.variantParameters ?? {}),
@@ -208,6 +241,9 @@ const normalizeOldInput = (response: any, materialsList: any[] = []) => {
       : {}),
     ...(furnaceId !== undefined && furnaceId !== null
       ? { blastFurnaceID: Number(furnaceId) }
+      : {}),
+    ...(matchedFurnaceId !== undefined && matchedFurnaceId !== null
+      ? { blastFurnaceID: Number(matchedFurnaceId) }
       : {}),
     ...(payload.furnaceID !== undefined && payload.furnaceID !== null
       ? { blastFurnaceID: Number(payload.furnaceID) }
@@ -231,7 +267,6 @@ const HomePage: React.FC = () => {
   const [furnaces, setFurnaces] = useState<any[]>([]);
   const [historyItems, setHistoryItems] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>();
-  const [result, setResult] = useState<any>();
   const [loadingHistory, setLoadingHistory] = useState(false);
   const furnaceValue = Form.useWatch(['parameters', 'blastFurnaceID'], form);
   const componentValues = Form.useWatch('components', form) || [];
@@ -247,7 +282,9 @@ const HomePage: React.FC = () => {
         const furnaceList = f?.data || f || [];
         setMaterials(materialList);
         setFurnaces(furnaceList);
-        form.setFieldsValue(normalizeOldInput(oldInput, materialList));
+        form.setFieldsValue(
+          normalizeOldInput(oldInput, materialList, furnaceList),
+        );
       })
       .catch(() => {
         message.warning('Справочники пока недоступны');
@@ -281,7 +318,6 @@ const HomePage: React.FC = () => {
     try {
       const response = await calculate(values);
       const resultData = response?.data || response;
-      setResult(resultData);
       showCalculationResult(resultData);
       message.success('Расчёт выполнен');
     } catch {
@@ -362,19 +398,8 @@ const HomePage: React.FC = () => {
                         )
                       }
                       options={furnaces.map((item) => ({
-                        value: Number(
-                          item.furnaceID ??
-                            item.blastFurnaceID ??
-                            item.id ??
-                            item.componentID,
-                        ),
-                        label:
-                          item.name ||
-                          item.nameBlastFurnace ||
-                          item.ruName ||
-                          item.ruNameBlastFurnace ||
-                          item.nameShihta ||
-                          item.ruNameShihta,
+                        value: Number(getFurnaceId(item)),
+                        label: getFurnaceName(item),
                       }))}
                       showSearch
                       optionFilterProp="label"
@@ -529,11 +554,6 @@ const HomePage: React.FC = () => {
                 </Row>
               )}
             </Form.List>
-            {result && (
-              <Card title="Результат" className={styles.result}>
-                <pre>{JSON.stringify(result, null, 2)}</pre>
-              </Card>
-            )}
           </Form>
         </Col>
         <Col xs={24} xl={7}>

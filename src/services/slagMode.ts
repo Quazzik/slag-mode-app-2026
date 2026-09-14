@@ -18,6 +18,55 @@ export type Calculation = {
 // Use relative API path so dev server proxy can forward requests to backend
 const api = `/api/SlagMode`;
 
+const clearExpiredSession = () => {
+  localStorage.removeItem('slag_user');
+  localStorage.removeItem('slag_user_id');
+  if (window.location.pathname !== '/access') {
+    window.location.replace('/access');
+  }
+};
+
+const containsExpiredTokenMessage = (value: unknown): boolean => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'object') {
+    return Object.values(value as Record<string, unknown>).some(
+      containsExpiredTokenMessage,
+    );
+  }
+  const text = String(value).toLowerCase();
+  return (
+    text.includes('token expired') ||
+    text.includes('jwt expired') ||
+    text.includes('токен истек') ||
+    text.includes('токен истёк')
+  );
+};
+
+const isExpiredTokenError = (error: any) =>
+  error?.response?.status === 401 ||
+  error?.status === 401 ||
+  containsExpiredTokenMessage(error?.response?.data) ||
+  containsExpiredTokenMessage(error?.data) ||
+  containsExpiredTokenMessage(error?.message);
+
+const authenticatedRequest = async <T>(
+  url: string,
+  options: Record<string, unknown> = {},
+): Promise<T> => {
+  try {
+    const response = await request<T>(url, options);
+    if (containsExpiredTokenMessage(response)) {
+      clearExpiredSession();
+    }
+    return response;
+  } catch (error) {
+    if (isExpiredTokenError(error)) {
+      clearExpiredSession();
+    }
+    throw error;
+  }
+};
+
 const getAuthHeaders = (): Record<string, string> => {
   try {
     const token = localStorage.getItem('slag_user');
@@ -32,17 +81,21 @@ export const login = (data: { userName: string; password: string }) =>
   request<any>(`${api}/Login`, { method: 'POST', data });
 
 export const calculate = (data: InputKal) =>
-  request<any>(`${api}/Calculate`, {
+  authenticatedRequest<any>(`${api}/Calculate`, {
     method: 'POST',
     data,
     headers: getAuthHeaders(),
   });
 
 export const getMaterials = () =>
-  request<any>(`${api}/GetMaterials`, { headers: getAuthHeaders() });
+  authenticatedRequest<any>(`${api}/GetMaterials`, {
+    headers: getAuthHeaders(),
+  });
 
 export const getBlastFurnaces = () =>
-  request<any>(`${api}/GetBlastFurnaces`, { headers: getAuthHeaders() });
+  authenticatedRequest<any>(`${api}/GetBlastFurnaces`, {
+    headers: getAuthHeaders(),
+  });
 
 export const decodeJwt = async (jwt: string) => {
   const token = jwt || localStorage.getItem('slag_user') || '';
@@ -85,21 +138,21 @@ export const decodeJwt = async (jwt: string) => {
 };
 
 export const getHistory = (userID?: number) =>
-  request<any>(`${api}/GetAllInputsForUser`, {
+  authenticatedRequest<any>(`${api}/GetAllInputsForUser`, {
     method: 'GET',
     params: userID === undefined ? undefined : { userID },
     headers: getAuthHeaders(),
   });
 
 export const getOldInput = (variantId: number) =>
-  request<any>(`${api}/GetOldInput`, {
+  authenticatedRequest<any>(`${api}/GetOldInput`, {
     method: 'GET',
     params: { variantId },
     headers: getAuthHeaders(),
   });
 
 export const deleteCalculation = (calcID: number) =>
-  request<any>(`${api}/DeleteOldInput`, {
+  authenticatedRequest<any>(`${api}/DeleteOldInput`, {
     method: 'DELETE',
     params: { calcID },
     headers: getAuthHeaders(),
@@ -132,7 +185,7 @@ export const saveCalculation = (data: Calculation) => {
       return charge;
     });
   }
-  return request<any>(`${api}/AddInput`, {
+  return authenticatedRequest<any>(`${api}/AddInput`, {
     method: 'PUT',
     data: normalized,
     headers: getAuthHeaders(),
@@ -140,7 +193,7 @@ export const saveCalculation = (data: Calculation) => {
 };
 
 export const editMaterial = (data: Record<string, unknown>) =>
-  request<any>(`${api}/EditGuide`, {
+  authenticatedRequest<any>(`${api}/EditGuide`, {
     method: 'POST',
     data,
     headers: getAuthHeaders(),
