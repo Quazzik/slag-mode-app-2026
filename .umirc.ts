@@ -8,7 +8,12 @@ export default defineConfig({
   request: {},
   proxy: {
     '/api/SlagMode': {
-      target: 'https://localhost:44324',
+      target: 'https://localhost:7258',
+      changeOrigin: true,
+      secure: false,
+    },
+    '/api/SostavOfAglom': {
+      target: 'http://localhost:5296',
       changeOrigin: true,
       secure: false,
     },
@@ -22,9 +27,14 @@ export default defineConfig({
       redirect: '/home',
     },
     {
-      name: 'Расчёт',
+      name: 'Расчёт шлака',
       path: '/home',
       component: './Home',
+    },
+    {
+      name: 'Расчёт аглошихты',
+      path: '/aglom',
+      component: './Aglom',
     },
     {
       name: 'Справочники',

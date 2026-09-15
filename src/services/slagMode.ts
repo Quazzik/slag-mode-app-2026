@@ -198,3 +198,41 @@ export const editMaterial = (data: Record<string, unknown>) =>
     data,
     headers: getAuthHeaders(),
   });
+
+  // SostavOfAglom API
+const aglomApi = `/api/SostavOfAglom`;
+
+export const calculateAglom = (data: any) =>
+  request<any>(`${aglomApi}/Calculate`, {
+    method: 'POST',
+    data,
+    headers: getAuthHeaders(),
+  });
+
+export const getAglomDefaultPreset = (userId?: number) =>
+  request<any>(`${aglomApi}/GetDefaultPreset`, {
+    method: 'GET',
+    params: userId === undefined ? undefined : { userId },
+    headers: getAuthHeaders(),
+  });
+
+export const getAglomPreset = (id: number) =>
+  request<any>(`${aglomApi}/GetPreset`, {
+    method: 'GET',
+    params: { id },
+    headers: getAuthHeaders(),
+  });
+
+export const getAglomHistory = (userId?: number) =>
+  request<any>(`${aglomApi}/GetHistory`, {
+    method: 'GET',
+    params: userId === undefined ? undefined : { userId },
+    headers: getAuthHeaders(),
+  });
+
+export const deleteAglomPreset = (presetId: number) =>
+  request<any>(`${aglomApi}/DeletePreset`, {
+    method: 'DELETE',
+    params: { presetId },
+    headers: getAuthHeaders(),
+  });
